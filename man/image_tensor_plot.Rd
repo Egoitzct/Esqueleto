@@ -4,7 +4,7 @@
 \alias{image_tensor_plot}
 \title{Plot image tensor}
 \usage{
-image_tensor_plot(image_tensor)
+image_tensor_plot(image_path)
 }
 \description{
 Plot image tensor

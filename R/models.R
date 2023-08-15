@@ -1,5 +1,7 @@
-#' @title utils
+#' @name models
+#' @title models
 #' @import torch
+#' @import torchvision
 
 
 ## AlexNet implementation from https://github.com/mlverse/torchvision/blob/main/R/models-alexnet.R
