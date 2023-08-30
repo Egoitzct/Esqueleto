@@ -1,47 +1,9 @@
-#' @name models
-#' @title models
+#' @name resnet
+#' @title resnet
 #' @import torch
 #' @import torchvision
-
-
-## AlexNet implementation from https://github.com/mlverse/torchvision/blob/main/R/models-alexnet.R
-alexnet_model <- torch::nn_module(
-  "AlexNet",
-  initialize = function(num_classes) {
-    self$features <- torch::nn_sequential(
-      torch::nn_conv2d(3, 64, kernel_size = 11, stride = 4, padding = 2),
-      torch::nn_relu(inplace = TRUE),
-      torch::nn_max_pool2d(kernel_size = 3, stride = 2),
-      torch::nn_conv2d(64, 192, kernel_size = 5, padding = 2),
-      torch::nn_relu(inplace = TRUE),
-      torch::nn_max_pool2d(kernel_size = 3, stride = 2),
-      torch::nn_conv2d(192, 384, kernel_size = 3, padding = 1),
-      torch::nn_relu(inplace = TRUE),
-      torch::nn_conv2d(384, 256, kernel_size = 3, padding = 1),
-      torch::nn_relu(inplace = TRUE),
-      torch::nn_conv2d(256, 256, kernel_size = 3, padding = 1),
-      torch::nn_relu(inplace = TRUE),
-      torch::nn_max_pool2d(kernel_size = 3, stride = 2)
-    )
-    self$avgpool <- torch::nn_adaptive_avg_pool2d(c(6,6))
-    self$classifier <- torch::nn_sequential(
-      torch::nn_dropout(p = 0.5),
-      torch::nn_linear(256*6*6, 4096),
-      torch::nn_relu(inplace = TRUE),
-      torch::nn_dropout(),
-      torch::nn_linear(4096, 4096),
-      torch::nn_relu(inplace = TRUE),
-      torch::nn_linear(4096, num_classes)
-    )
-  },
-  forward = function(x) {
-    x <- self$features(x)
-    x <- self$avgpool(x)
-    x <- torch::torch_flatten(x, start_dim = 3)
-    x <- self$classifier(x)
-    x
-  }
-)
+#'
+#' @export
 
 ## ResNet implementation based on https://github.com/pytorch/vision/blob/main/torchvision/models/resnet.py
 conv3x3 <- function(in_planes, out_planes, stride=1, groups=1, dilation=1) {
@@ -145,8 +107,8 @@ bottleneck <- torch::nn_module(
     if (!is.null(self$downsample)) {
       identity <- self$downsample(x)
     } else {
-        identity <- x
-      }
+      identity <- x
+    }
 
     out <- out + identity
     out <- self$relu(out)
@@ -188,9 +150,9 @@ resnet <- torch::nn_module(
       if (inherits(m, "nn_conv2d")) {
         torch::nn_init_kaiming_normal_(m$weight, mode="fan_out", nonlinearity = "relu")
       } else if (inherits(m, "nn_batch_norm2d") || inherits(m, "nn_group_norm")) {
-          torch::nn_init_constant_(m$weight, 1)
-          torch::nn_init_constant_(m$bias, 0)
-        }
+        torch::nn_init_constant_(m$weight, 1)
+        torch::nn_init_constant_(m$bias, 0)
+      }
     }
 
     if (zero_init_residual) {
@@ -257,11 +219,6 @@ resnet <- torch::nn_module(
   model
 }
 
-
-alexnet <- function() {
-  net <- alexnet_model
-}
-
 resnet18 <- function() {
   net <- .resnet(basic_block, c(2, 2, 2, 2))
 }
@@ -297,5 +254,3 @@ wide_resnet50_2 <- function(progress = TRUE) {
 wide_resnet101_2 <- function(progress = TRUE) {
   net <- .resnet(bottleneck, c(3, 4, 23, 3), progress, width_per_group = 64*2)
 }
-
-
