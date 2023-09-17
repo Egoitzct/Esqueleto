@@ -46,4 +46,5 @@ alexnet_model <- torch::nn_module(
 
 alexnet <- function() {
   net <- alexnet_model
+  return(net)
 }
