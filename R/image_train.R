@@ -3,6 +3,7 @@
 #' @import torchvision
 #' @import luz
 #'
+#' @export
 
 image_train <- function(image_path, model = "resnet34", pretrained = FALSE, batch_size = 64) {
   if (torch::torch_is_installed() == FALSE) {
@@ -24,21 +25,21 @@ image_train <- function(image_path, model = "resnet34", pretrained = FALSE, batc
   if (model == "alexnet") {
     net <- alexnet()
   } else if (model == "resnet34") {
-    net <- resnet34()
+    net <- torchvision::model_resnet34(pretrained = pretrained)
   } else if (model == "resnet50") {
-    net <- resnet50()
+    net <- torchvision::model_resnet50(pretrained = pretrained)
   } else if (model == "resnet101") {
-    net <- resnet101()
+    net <- torchvision::model_resnet101(pretrained = pretrained)
   } else if (model == "resnet152") {
-    net <- resnet152()
+    net <- torchvision::model_resnet152(pretrained = pretrained)
   } else if (model == "resnext50_32x4d") {
-    net <- resnext50_32x4d()
+    net <- torchvision::model_resnext50_32x4d(pretrained = pretrained)
   } else if (model == "resnext101_32x8d") {
-    net <- resnext101_32x8d()
+    net <- torchvision::model_resnext101_32x8d(pretrained = pretrained)
   } else if (model == "wide_resnet50_2") {
-    net <- wide_resnet50_2()
+    net <- torchvision::model_wide_resnet50_2(pretrained = pretrained)
   } else if (model == "wide_resnet101_2") {
-    net <- wide_resnet101_2()
+    net <- torchvision::model_wide_resnet101_2(pretrained = pretrained)
   }
 
   num_classes <- length(train_ds$classes)

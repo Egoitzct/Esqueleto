@@ -2,8 +2,6 @@
 #' @title resnet
 #' @import torch
 #' @import torchvision
-#'
-#' @export
 
 ## ResNet implementation based on https://github.com/pytorch/vision/blob/main/torchvision/models/resnet.py
 conv3x3 <- function(in_planes, out_planes, stride=1, groups=1, dilation=1) {
@@ -220,37 +218,37 @@ resnet <- torch::nn_module(
 }
 
 resnet18 <- function() {
-  net <- .resnet(basic_block, c(2, 2, 2, 2))
+  .resnet(basic_block, c(2, 2, 2, 2))
 }
 
 resnet34 <- function() {
-  net <- .resnet(basic_block, c(3, 4, 6, 3))
+  .resnet(basic_block, c(3, 4, 6, 3))
 }
 
 resnet50 <- function() {
-  net <- .resnet(bottleneck, c(3, 4, 6, 3))
+  .resnet(bottleneck, c(3, 4, 6, 3))
 }
 
 resnet101 <- function() {
-  net <- .resnet(bottleneck, c(3, 4, 23, 3))
+  .resnet(bottleneck, c(3, 4, 23, 3))
 }
 
 resnet152 <- function() {
-  net <- .resnet(bottleneck, c(3, 8, 36, 3))
+  .resnet(bottleneck, c(3, 8, 36, 3))
 }
 
 resnext50_32x4d <- function() {
-  net <- .resnet(bottleneck, c(3, 4, 6, 3), groups = 32, width_per_group = 4)
+  .resnet(bottleneck, c(3, 4, 6, 3), groups = 32, width_per_group = 4)
 }
 
 resnext101_32x8d <- function(progress = TRUE) {
-  net <- .resnet(bottleneck, c(3, 4, 23, 3), progress, groups = 32, width_per_group = 8)
+  .resnet(bottleneck, c(3, 4, 23, 3), progress, groups = 32, width_per_group = 8)
 }
 
 wide_resnet50_2 <- function(progress = TRUE) {
-  net <- .resnet(bottleneck, c(3, 4, 6, 3), progress, width_per_group = 64*2)
+  .resnet(bottleneck, c(3, 4, 6, 3), progress, width_per_group = 64*2)
 }
 
 wide_resnet101_2 <- function(progress = TRUE) {
-  net <- .resnet(bottleneck, c(3, 4, 23, 3), progress, width_per_group = 64*2)
+  .resnet(bottleneck, c(3, 4, 23, 3), progress, width_per_group = 64*2)
 }
