@@ -55,8 +55,6 @@ image_train <- function(image_path, model = "resnet34", pretrained = FALSE, batc
     set_hparams(num_classes) %>%
     luz::fit(train_dl, epochs = 5, valid_data = valid_dl, verbose = TRUE)
 
-  path <- paste(getwd(), "model", sep = "/")
-
-  luz_save(model, path = path)
+  return(model)
 
   }
