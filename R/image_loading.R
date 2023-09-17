@@ -5,6 +5,7 @@
 #' @description
 #' Una función para cargar una base de datos compuesta por imágenes. La base de datos deberá estar compuesta por tres carpetas (train, valid y test)
 #'
+#' @export
 
 image_loading <- function(image_directory){
   if (torch::torch_is_installed() == FALSE) {
