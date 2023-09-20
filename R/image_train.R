@@ -5,8 +5,9 @@
 #'
 #' @export
 
-image_train <- function(image_path, model = "resnet34", pretrained = FALSE, batch_size = 64) {
+image_train <- function(image_path, model = "resnet34", pretrained = FALSE, batch_size = 128) {
   if (torch::torch_is_installed() == FALSE) {
+
     torch::install_torch()
   }
 
@@ -23,7 +24,34 @@ image_train <- function(image_path, model = "resnet34", pretrained = FALSE, batc
   test_dl <- dataloader(test_ds, batch_size = batch_size)
 
   if (model == "alexnet") {
+    num_classes <- length(train_ds$classes)
+
     net <- alexnet()
+
+    if (num_classes == 2) {
+      model <- net %>%
+        setup(
+          loss = nn_bce_with_logits_loss(),
+          optimizer = optim_adam,
+          metrics = list(
+            luz_metric_binary_accuracy_with_logits()
+          )
+        ) %>%
+        set_hparams(num_classes = num_classes) %>%
+        fit(train_dl, epochs = 5, valid_data = valid_dl, verbose = TRUE) #Cambiar epochs después de pruebas
+    } else {
+      model <- net %>%
+        setup(
+          loss = nn_cross_entropy_loss(),
+          optimizer = optim_adam,
+          metrics = list(
+            luz_metric_accuracy()
+          )
+        ) %>%
+        set_hparams(num_classes = num_classes) %>%
+        fit(train_dl, epochs = 5, valid_data = valid_dl, verbose = TRUE)
+    }
+
   } else if (model == "resnet34") {
     net <- torchvision::model_resnet34(pretrained = pretrained)
   } else if (model == "resnet50") {
@@ -42,19 +70,6 @@ image_train <- function(image_path, model = "resnet34", pretrained = FALSE, batc
     net <- torchvision::model_wide_resnet101_2(pretrained = pretrained)
   }
 
-  num_classes <- length(train_ds$classes)
-
-  model <- net %>%
-    setup(
-      loss = nn_cross_entropy_loss(),
-      optimizer = optim_adam,
-      metrics = list(
-        luz_metric_binary_accuracy_with_logits()
-      )
-    ) %>%
-    set_hparams(num_classes) %>%
-    luz::fit(train_dl, epochs = 5, valid_data = valid_dl, verbose = TRUE)
-
   return(model)
 
-  }
+}

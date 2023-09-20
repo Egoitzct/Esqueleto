@@ -8,7 +8,7 @@ image_train(
   image_path,
   model = "resnet34",
   pretrained = FALSE,
-  batch_size = 64
+  batch_size = 128
 )
 }
 \description{

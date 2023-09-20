@@ -26,8 +26,8 @@ alexnet_model <- torch::nn_module(
     )
     self$avgpool <- torch::nn_adaptive_avg_pool2d(c(6,6))
     self$classifier <- torch::nn_sequential(
-      torch::nn_dropout(p = 0.5),
-      torch::nn_linear(256*6*6, 4096),
+      torch::nn_dropout(),
+      torch::nn_linear(256 * 6 * 6, 4096),
       torch::nn_relu(inplace = TRUE),
       torch::nn_dropout(),
       torch::nn_linear(4096, 4096),
@@ -38,7 +38,7 @@ alexnet_model <- torch::nn_module(
   forward = function(x) {
     x <- self$features(x)
     x <- self$avgpool(x)
-    x <- torch::torch_flatten(x, start_dim = 3)
+    x <- torch::torch_flatten(x, start_dim = 2)
     x <- self$classifier(x)
     x
   }
