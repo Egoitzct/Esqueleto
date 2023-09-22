@@ -3,6 +3,7 @@
 export(alexnet_model)
 export(image_loading)
 export(image_train)
+export(image_train_lr)
 import(luz)
 import(torch)
 import(torchvision)
