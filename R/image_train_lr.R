@@ -39,7 +39,7 @@ image_train_lr <- function(image_path, model = "resnet34", pretrained = FALSE, b
       learning_rate <- lr_finder(
         object = model,
         data = train_ds,
-        verbose = FALSE,
+        verbose = TRUE,
         dataloader_options = list(batch_size = batch_size),
         start_lr = 1e-6,
         end_lr = 1
@@ -63,7 +63,7 @@ image_train_lr <- function(image_path, model = "resnet34", pretrained = FALSE, b
       learning_rate <- lr_finder(
         object = model,
         data = train_ds,
-        verbose = FALSE,
+        verbose = TRUE,
         dataloader_options = list(batch_size = batch_size),
         start_lr = 1e-6,
         end_lr = 1
@@ -106,7 +106,7 @@ image_train_lr <- function(image_path, model = "resnet34", pretrained = FALSE, b
       learning_rate <- lr_finder(
         object = model,
         data = train_dl,
-        verbose = FALSE,
+        verbose = TRUE,
         start_lr = 1e-6,
         end_lr = 1
       )
