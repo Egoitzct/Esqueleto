@@ -1,11 +1,11 @@
-#' @title Entrenamiento de imágenes
+#' @title Entrenamiento de imágenes (pruebas)
 #' @import torch
 #' @import torchvision
 #' @import luz
 #'
 #' @export
 
-image_train <- function(image_path, model = "alexnet", pretrained = FALSE, batch_size = 64) {
+image_train_pruebas <- function(model = "alexnet", pretrained = FALSE, batch_size = 64) {
   if (torch::torch_is_installed() == FALSE) {
 
     torch::install_torch()
@@ -13,15 +13,39 @@ image_train <- function(image_path, model = "alexnet", pretrained = FALSE, batch
 
   # device <- if (cuda_is_available()) torch_device("cuda:0") else "cpu"
 
-  image_data <- image_loading(image_path)
+  train_transforms <- function(x) {
+    x %>%
+      torchvision::transform_to_tensor() %>%
+      torchvision::transform_random_resized_crop(size = c(224, 224), scale = c(0.96, 1), ratio = c(0.95, 1.05)) %>%
+      torchvision::transform_color_jitter() %>%
+      torchvision::transform_random_horizontal_flip() %>%
+      torchvision::transform_normalize(mean = c(0.485, 0.456, 0.406), std = c(0.229, 0.224, 0.225))
+  }
 
-  train_ds <- image_data$train_ds
-  valid_ds <- image_data$valid_ds
-  test_ds <- image_data$test_ds
+  valid_transforms <- function(x) {
+    x %>%
+      torchvision::transform_to_tensor() %>%
+      torchvision::transform_resize(256) %>%
+      torchvision::transform_center_crop(224) %>%
+      torchvision::transform_normalize(mean = c(0.485, 0.456, 0.406), std = c(0.229, 0.224, 0.225))
+  }
+
+  test_transforms <- valid_transforms
+
+  dir <- "~/.torch-datasets"
+
+  train_ds <- tiny_imagenet_dataset(
+    dir,
+    download = TRUE,
+    transform = train_transforms)
+
+  valid_ds <- tiny_imagenet_dataset(
+    dir,
+    split = "val",
+    transform = valid_transforms)
 
   train_dl <- dataloader(train_ds, batch_size = batch_size)
   valid_dl <- dataloader(valid_ds, batch_size = batch_size)
-  test_dl <- dataloader(test_ds, batch_size = batch_size)
 
   num_classes <- length(train_ds$classes)
 

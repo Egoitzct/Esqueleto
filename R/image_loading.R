@@ -11,8 +11,8 @@ image_loading <- function(image_directory){
   if (torch::torch_is_installed() == FALSE) {
     torch::install_torch()
   }
-  set.seed(777)
-  torch::torch_manual_seed(777)
+  set.seed(123)
+  torch::torch_manual_seed(123)
 
   train_transforms <- function(x) {
     x %>%
