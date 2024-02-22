@@ -5,3 +5,5 @@
 /R/.hello.R
 /man/.hello.Rd
 model.pt
+*.pth
+*.pt
