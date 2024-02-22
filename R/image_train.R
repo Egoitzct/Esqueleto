@@ -11,7 +11,7 @@ image_train <- function(image_path, model = "alexnet", pretrained = FALSE, batch
     torch::install_torch()
   }
 
-  # device <- if (cuda_is_available()) torch_device("cuda:0") else "cpu"
+  device <- if (cuda_is_available()) torch_device("cuda:0") else "cpu"
 
   image_data <- image_loading(image_path)
 
@@ -27,31 +27,51 @@ image_train <- function(image_path, model = "alexnet", pretrained = FALSE, batch
 
   if (model == "alexnet") {
 
+    net <- torch::nn_module(
+      "AlexNet",
+      initialize = function(num_classes) {
+        self$model <- alexnet_mod(pretrained = pretrained)
 
-    net <- alexnet()
+        for (par in self$parameters) {
+          par$requires_grad_(FALSE)
+        }
 
-    if (num_classes == 2) {
+        self$model$classifier <- nn_sequential(
+          nn_dropout(0.5),
+          nn_linear(9216, 512),
+          nn_relu(),
+          nn_linear(512, 256),
+          nn_relu(),
+          nn_linear(256, num_classes)
+        )
+      },
+      forward = function(x) {
+        self$model(x)[,1]
+      }
+    )
+
+    if (num_classes == 0) {
       model <- net %>%
         setup(
           loss = nn_bce_with_logits_loss(),
           optimizer = optim_adam,
           metrics = list(
-            luz_metric_binary_accuracy_with_logits()
+            luz::luz_metric_binary_accuracy_with_logits()
           )
         ) %>%
-        set_hparams(num_classes = 2) %>%
-        fit(train_dl, epochs = 1, valid_data = valid_dl, verbose = TRUE) #Cambiar epochs después de pruebas
+        set_hparams(num_classes = 1) %>%
+        fit(train_dl, epochs = 5, valid_data = valid_dl, verbose = TRUE) #Cambiar epochs después de pruebas
     } else {
       model <- net %>%
         setup(
-          loss = nn_cross_entropy_loss(),
+          loss = nn_nll_loss(),
           optimizer = optim_adam,
           metrics = list(
             luz_metric_accuracy()
           )
         ) %>%
         set_hparams(num_classes = num_classes) %>%
-        fit(train_dl, epochs = 1, valid_data = valid_dl, verbose = TRUE)
+        fit(train_dl, epochs = 5, valid_data = valid_dl, verbose = TRUE)
     }
 
   } else if (model == "vgg11") {

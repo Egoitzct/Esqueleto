@@ -4,12 +4,7 @@
 \alias{image_train}
 \title{Entrenamiento de imágenes}
 \usage{
-image_train(
-  image_path,
-  model = "resnet34",
-  pretrained = FALSE,
-  batch_size = 128
-)
+image_train(image_path, model = "alexnet", pretrained = FALSE, batch_size = 64)
 }
 \description{
 Entrenamiento de imágenes
