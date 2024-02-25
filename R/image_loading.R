@@ -17,7 +17,7 @@ image_loading <- function(image_directory){
   train_transforms <- function(x) {
     x %>%
       torchvision::transform_to_tensor() %>%
-      torchvision::transform_random_resized_crop(size = c(224, 224), scale = c(0.96, 1), ratio = c(0.95, 1.05)) %>%
+      torchvision::transform_random_resized_crop(size = c(64, 64), scale = c(0.96, 1), ratio = c(0.95, 1.05)) %>%
       torchvision::transform_color_jitter() %>%
       torchvision::transform_random_horizontal_flip() %>%
       torchvision::transform_normalize(mean = c(0.485, 0.456, 0.406), std = c(0.229, 0.224, 0.225))
@@ -26,8 +26,8 @@ image_loading <- function(image_directory){
   valid_transforms <- function(x) {
     x %>%
       torchvision::transform_to_tensor() %>%
-      torchvision::transform_resize(256) %>%
-      torchvision::transform_center_crop(224) %>%
+      torchvision::transform_resize(76) %>%
+      torchvision::transform_center_crop(64) %>%
       torchvision::transform_normalize(mean = c(0.485, 0.456, 0.406), std = c(0.229, 0.224, 0.225))
   }
 
