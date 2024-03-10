@@ -1,4 +1,4 @@
-#' @title Image Loader
+#' @title Image Loading
 #' @import torch
 #' @import torchvision
 #' @import luz

@@ -72,26 +72,35 @@ image_train_pruebas <- function(model = "alexnet", pretrained = FALSE, epochs = 
     train_ds <- tiny_imagenet_dataset(
       dir,
       download = TRUE,
-      transform = function(x) {
-        x %>%
-          transform_to_tensor() %>%
-          transform_resize(c(64, 64))
-      }
+      transform = . %>%
+        transform_to_tensor() %>%
+        transform_random_affine(
+          degrees = c(-30, 30), translate = c(0.2, 0.2)
+        ) %>%
+        transform_normalize(
+          mean = c(0.485, 0.456, 0.406),
+          std = c(0.229, 0.224, 0.225)
+        )
     )
 
     valid_ds <- tiny_imagenet_dataset(
       dir,
-      download = TRUE,
       split = "val",
       transform = function(x) {
         x %>%
           transform_to_tensor() %>%
-          transform_resize(c(64,64))
+          transform_normalize(
+            mean = c(0.485, 0.456, 0.406),
+            std = c(0.229, 0.224, 0.225))
       }
     )
 
-    train_dl <- dataloader(train_ds, batch_size = 64, shuffle = TRUE, drop_last = TRUE)
-    valid_dl <- dataloader(valid_ds, batch_size = 64, shuffle = FALSE, drop_last = TRUE)
+    train_dl <- dataloader(
+      train_ds,
+      batch_size = 128,
+      shuffle = TRUE
+    )
+    valid_dl <- dataloader(valid_ds, batch_size = 128)
   } else if (datasets == "cifar10") {
     dir <- "~/.torch-datasets/cifar10/"
     train_ds <- cifar10_dataset(
@@ -126,7 +135,7 @@ image_train_pruebas <- function(model = "alexnet", pretrained = FALSE, epochs = 
      net <- torch::nn_module(
        "AlexNet",
        initialize = function(num_classes) {
-         self$model <- alexnet_mod(pretrained = pretrained)
+         self$model <- torchvision::model_alexnet(pretrained = pretrained)
 
          for (par in self$parameters) {
            par$requires_grad_(FALSE)
@@ -157,7 +166,7 @@ image_train_pruebas <- function(model = "alexnet", pretrained = FALSE, epochs = 
         ) %>%
         set_hparams(num_classes = 1) %>%
         fit(train_dl, epochs = epochs, valid_data = valid_dl, verbose = TRUE,
-            callbacks = list(luz::luz_callback_early_stopping())) #Cambiar epochs después de pruebas
+            callbacks = list(luz::luz_callback_early_stopping()))
     } else {
       fitted_model <- net %>%
         setup(
@@ -212,6 +221,62 @@ image_train_pruebas <- function(model = "alexnet", pretrained = FALSE, epochs = 
         ) %>%
         set_hparams(num_classes = num_classes) %>%
         fit(train_dl, epochs = 5, valid_data = valid_dl, verbose = TRUE)
+    }
+  } else if (model == "resnet18") {
+    net <- torch::nn_module(
+      initialize = function(num_classes) {
+        self$model <- model_resnet18(pretrained = TRUE)
+        for (par in self$parameters) {
+          par$requires_grad_(FALSE)
+        }
+        self$model$fc <- nn_sequential(
+          nn_linear(self$model$fc$in_features, 1024),
+          nn_relu(),
+          nn_linear(1024, 1024),
+          nn_relu(),
+          nn_linear(1024, num_classes)
+        )
+      },
+      forward = function(x) {
+        self$model(x)
+      }
+    )
+
+    if (num_classes == 0) {
+      fitted_model <- net %>%
+        setup(
+          loss = nn_bce_with_logits_loss(),
+          optimizer = optim_adam,
+          metrics = list(
+            luz::luz_metric_binary_accuracy_with_logits()
+          )
+        ) %>%
+        set_hparams(num_classes = 1) %>%
+        fit(train_dl, epochs = epochs, valid_data = valid_dl, verbose = TRUE,
+            callbacks = list(luz::luz_callback_early_stopping()))
+    } else {
+      fitted_model <- net %>%
+        setup(
+          loss = nn_cross_entropy_loss(),
+          optimizer = optim_adam,
+          metrics = list(
+            luz_metric_accuracy()
+          )
+        ) %>%
+        set_hparams(num_classes = num_classes) %>%
+        fit(train_dl, epochs = 50, valid_data = valid_dl,
+            callbacks = list(
+              luz_callback_early_stopping(patience = 2),
+              luz_callback_lr_scheduler(
+                lr_one_cycle,
+                max_lr = 0.01,
+                epochs = 50,
+                steps_per_epoch = length(train_dl),
+                call_on = "on_batch_end"),
+              luz_callback_model_checkpoint(path = "cpt_resnet/"),
+              luz_callback_csv_logger("logs_resnet.csv")
+            ),
+            verbose = TRUE)
     }
   }
 
