@@ -12,7 +12,8 @@ entrenamiento_imagenes(
   epochs = 10,
   learning_rate = 0.01,
   optimizer = "adam",
-  test = T
+  test = T,
+  default_transforms = T
 )
 }
 \description{

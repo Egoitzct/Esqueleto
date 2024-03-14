@@ -2,7 +2,6 @@
 
 export(entrenamiento_imagenes)
 export(image_loader)
-export(image_loading)
 export(image_train_lr)
 export(image_train_pruebas)
 export(prediction)
