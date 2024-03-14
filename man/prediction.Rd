@@ -7,10 +7,10 @@
 prediction(model_path, object_path)
 }
 \arguments{
-\item{model_path}{Path to the trained model}
+\item{model_path}{Path to the trained model (the model must have been trained using the image_train function o using the "luz" package)}
 
 \item{object_path}{Path to the object that is going to be classified}
 }
 \description{
-Prediction
+A function used to predict the class of a single image using a previously trained model.
 }

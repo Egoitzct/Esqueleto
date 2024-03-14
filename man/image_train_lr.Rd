@@ -6,7 +6,7 @@
 \usage{
 image_train_lr(
   image_path,
-  model = "resnet34",
+  model = "alexnet",
   pretrained = FALSE,
   batch_size = 128
 )

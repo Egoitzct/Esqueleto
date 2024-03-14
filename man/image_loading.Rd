@@ -2,7 +2,7 @@
 % Please edit documentation in R/image_loading.R
 \name{image_loading}
 \alias{image_loading}
-\title{Image Loader}
+\title{Image Loading}
 \usage{
 image_loading(image_directory)
 }

@@ -7,6 +7,7 @@
 image_train_pruebas(
   model = "alexnet",
   pretrained = FALSE,
+  epochs = 10,
   batch_size = 32,
   datasets = "dogs_cats",
   image_path
