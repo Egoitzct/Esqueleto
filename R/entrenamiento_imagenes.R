@@ -20,7 +20,7 @@ entrenamiento_imagenes <- function(image_path, model = "alexnet", pretrained = F
     valid_dl <- dataloader(valid_ds, batch_size = batch_size, shuffle = FALSE, drop_last = TRUE)
     test_dl <- dataloader(test_ds, batch_size = batch_size, shuffle = FALSE, drop_last = TRUE)
   } else {
-    image_data <- image_loader(image_path, model)
+    image_data <- image_loader(image_path, model, test)
 
     train_ds <- image_data$train_ds
     valid_ds <- image_data$valid_ds

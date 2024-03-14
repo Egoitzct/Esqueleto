@@ -109,23 +109,35 @@ image_loader <- function(image_path, model, default_transforms = T, test = T){
 
   }
 
-  train_ds <- torchvision::image_folder_dataset(
-    file.path(image_path, "train"),
-    transform = train_transforms
-  )
-
   if (test == TRUE) {
-  test_ds <- torchvision::image_folder_dataset(
-    file.path(image_path, "test"),
-    transform = test_transforms
-  )
+    train_ds <- torchvision::image_folder_dataset(
+      file.path(image_path, "train"),
+      transform = train_transforms
+    )
+
+    test_ds <- torchvision::image_folder_dataset(
+      file.path(image_path, "test"),
+      transform = test_transforms
+    )
+
+    valid_ds <- torchvision::image_folder_dataset(
+      file.path(image_path, "valid"),
+      transform = valid_transforms
+    )
+
+    return(list(train_ds = train_ds, valid_ds = valid_ds, test_ds = test_ds))
+  } else {
+    train_ds <- torchvision::image_folder_dataset(
+      file.path(image_path, "train"),
+      transform = train_transforms
+    )
+
+    valid_ds <- torchvision::image_folder_dataset(
+      file.path(image_path, "valid"),
+      transform = valid_transforms
+    )
+
+    return(list(train_ds = train_ds, valid_ds = valid_ds))
   }
-
-  valid_ds <- torchvision::image_folder_dataset(
-    file.path(image_path, "valid"),
-    transform = valid_transforms
-  )
-
-  return(list(train_ds = train_ds, valid_ds = valid_ds, test_ds = test_ds))
 
 }
