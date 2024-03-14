@@ -3,21 +3,31 @@
 #'
 
 entrenamiento_imagenes <- function(image_path, model = "alexnet", pretrained = F, batch_size = 128, epochs = 10, learning_rate = 0.01,
-                                   optimizer = "adam"){
+                                   optimizer = "adam", test = T){
   if (torch::torch_is_installed() == FALSE) {
 
     torch::install_torch()
   }
 
-  image_data <- image_loader(image_path, model)
+  if (test == TRUE){
+    image_data <- image_loader(image_path, model, test)
 
-  train_ds <- image_data$train_ds
-  valid_ds <- image_data$valid_ds
-  test_ds <- image_data$test_ds
+    train_ds <- image_data$train_ds
+    valid_ds <- image_data$valid_ds
+    test_ds <- image_data$test_ds
 
-  train_dl <- dataloader(train_ds, batch_size = batch_size, shuffle = TRUE, drop_last = TRUE)
-  valid_dl <- dataloader(valid_ds, batch_size = batch_size, shuffle = FALSE, drop_last = TRUE)
-  test_dl <- dataloader(test_ds, batch_size = batch_size, shuffle = FALSE, drop_last = TRUE)
+    train_dl <- dataloader(train_ds, batch_size = batch_size, shuffle = TRUE, drop_last = TRUE)
+    valid_dl <- dataloader(valid_ds, batch_size = batch_size, shuffle = FALSE, drop_last = TRUE)
+    test_dl <- dataloader(test_ds, batch_size = batch_size, shuffle = FALSE, drop_last = TRUE)
+  } else {
+    image_data <- image_loader(image_path, model)
+
+    train_ds <- image_data$train_ds
+    valid_ds <- image_data$valid_ds
+
+    train_dl <- dataloader(train_ds, batch_size = batch_size, shuffle = TRUE, drop_last = TRUE)
+    valid_dl <- dataloader(valid_ds, batch_size = batch_size, shuffle = FALSE, drop_last = TRUE)
+  }
 
   num_classes <- length(train_ds$classes)
 

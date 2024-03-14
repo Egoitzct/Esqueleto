@@ -2,7 +2,7 @@
 #' @export
 #'
 
-image_loader <- function(image_path, model, default_transforms = T){
+image_loader <- function(image_path, model, default_transforms = T, test = T){
   if (torch::torch_is_installed() == FALSE) {
     torch::install_torch()
   }
@@ -114,10 +114,12 @@ image_loader <- function(image_path, model, default_transforms = T){
     transform = train_transforms
   )
 
+  if (test == TRUE) {
   test_ds <- torchvision::image_folder_dataset(
     file.path(image_path, "test"),
     transform = test_transforms
   )
+  }
 
   valid_ds <- torchvision::image_folder_dataset(
     file.path(image_path, "valid"),

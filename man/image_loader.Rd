@@ -4,7 +4,7 @@
 \alias{image_loader}
 \title{Image Loader}
 \usage{
-image_loader(image_path, model, default_transforms = T)
+image_loader(image_path, model, default_transforms = T, test = T)
 }
 \description{
 Image Loader

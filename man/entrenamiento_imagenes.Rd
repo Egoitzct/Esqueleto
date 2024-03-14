@@ -11,7 +11,8 @@ entrenamiento_imagenes(
   batch_size = 128,
   epochs = 10,
   learning_rate = 0.01,
-  optimizer = "adam"
+  optimizer = "adam",
+  test = T
 )
 }
 \description{
