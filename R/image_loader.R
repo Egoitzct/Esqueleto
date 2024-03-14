@@ -2,14 +2,14 @@
 #' @export
 #'
 
-image_loader <- function(image_path, model, default_transforms = T, test = T){
+image_loader <- function(image_path, model, test = T){
   if (torch::torch_is_installed() == FALSE) {
     torch::install_torch()
   }
   set.seed(123)
   torch::torch_manual_seed(123)
 
-  if (model == "alexnet" && default_transforms == T) {
+  if (model == "alexnet") {
     train_transforms = function(x) {
       x %>%
         torchvision::transform_to_tensor() %>%
@@ -25,9 +25,8 @@ image_loader <- function(image_path, model, default_transforms = T, test = T){
         torchvision::transform_center_crop(64) %>%
         torchvision::transform_normalize(mean = c(0.485, 0.456, 0.406), std = c(0.229, 0.224, 0.225))
     }
-    test_transforms = valid_transforms
 
-  } else if (model == "resnet18" && default_transforms == T) {
+  } else if (model == "resnet18") {
     train_transforms = function(x) {
       x %>%
         torchvision::transform_to_tensor() %>%
@@ -41,9 +40,8 @@ image_loader <- function(image_path, model, default_transforms = T, test = T){
         torchvision::transform_to_tensor() %>%
         torchvision::transform_normalize(mean = c(0.485, 0.456, 0.406), std = c(0.229, 0.224, 0.225))
     }
-    test_transforms = valid_transforms
 
-  } else if (model == "resnet34" && default_transforms == T) {
+  } else if (model == "resnet34") {
     train_transforms = function(x) {
       x %>%
         torchvision::transform_to_tensor() %>%
@@ -57,9 +55,8 @@ image_loader <- function(image_path, model, default_transforms = T, test = T){
         torchvision::transform_to_tensor() %>%
         torchvision::transform_normalize(mean = c(0.485, 0.456, 0.406), std = c(0.229, 0.224, 0.225))
     }
-    test_transforms = valid_transforms
 
-  } else if (model == "resnet50" && default_transforms == T) {
+  } else if (model == "resnet50") {
     train_transforms = function(x) {
       x %>%
         torchvision::transform_to_tensor() %>%
@@ -73,9 +70,8 @@ image_loader <- function(image_path, model, default_transforms = T, test = T){
         torchvision::transform_to_tensor() %>%
         torchvision::transform_normalize(mean = c(0.485, 0.456, 0.406), std = c(0.229, 0.224, 0.225))
     }
-    test_transforms = valid_transforms
 
-  } else if (model == "resnet101" && default_transforms == T) {
+  } else if (model == "resnet101") {
     train_transforms = function(x) {
       x %>%
         torchvision::transform_to_tensor() %>%
@@ -89,9 +85,8 @@ image_loader <- function(image_path, model, default_transforms = T, test = T){
         torchvision::transform_to_tensor() %>%
         torchvision::transform_normalize(mean = c(0.485, 0.456, 0.406), std = c(0.229, 0.224, 0.225))
     }
-    test_transforms = valid_transforms
 
-  } else if (model == "resnet152" && default_transforms == T) {
+  } else if (model == "resnet152") {
     train_transforms = function(x) {
       x %>%
         torchvision::transform_to_tensor() %>%
@@ -105,7 +100,6 @@ image_loader <- function(image_path, model, default_transforms = T, test = T){
         torchvision::transform_to_tensor() %>%
         torchvision::transform_normalize(mean = c(0.485, 0.456, 0.406), std = c(0.229, 0.224, 0.225))
     }
-    test_transforms = valid_transforms
 
   }
 
@@ -117,7 +111,7 @@ image_loader <- function(image_path, model, default_transforms = T, test = T){
 
     test_ds <- torchvision::image_folder_dataset(
       file.path(image_path, "test"),
-      transform = test_transforms
+      transform = valid_transforms
     )
 
     valid_ds <- torchvision::image_folder_dataset(
@@ -126,6 +120,7 @@ image_loader <- function(image_path, model, default_transforms = T, test = T){
     )
 
     return(list(train_ds = train_ds, valid_ds = valid_ds, test_ds = test_ds))
+
   } else {
     train_ds <- torchvision::image_folder_dataset(
       file.path(image_path, "train"),
